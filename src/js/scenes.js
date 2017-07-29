@@ -1,7 +1,7 @@
 import gConsts from './game_constants';
 import { drawBorder, stopMovement, normalize } from './compo_helpers';
 
-function loseLife (msg = "Battery Over") {
+function loseLife (msg) {
   if (this.lives > 0) {
     Crafty.scene('msg', {
       text: msg,
@@ -11,11 +11,11 @@ function loseLife (msg = "Battery Over") {
         currentLives: this.lives - 1
       }
     });
-    return;
   } else {
-    // TODO: Change to better end screen
-    Crafty.scene('start');
-    return;
+    Crafty.scene('msg', {
+      text: msg + ", Game Over!",
+      next: "start"
+    });
   }
 }
 
@@ -37,17 +37,29 @@ function drawNavbar (pc) {
     }
   }
 
-  // TODO: Make this look better
   if (Crafty('NavbarBattery').length === 0) {
+    var loc = gConsts.navbarX(8)
+
     Crafty.e("2D, Canvas, NavbarBattery, Text")
-      .attr(gConsts.navbarX(8))
-      .textFont('size', '14px')
-      .text("Battery: " + pc.batteryLife);
+      .attr({x: loc.x, y: loc.y + 16})
+      .textFont('size', '14px');
+
+    Crafty.e("2D, Canvas, NavbarBatteryContainer, Color")
+      .attr(loc)
+      .attr({h: 14, w: 87})   // TODO: Move to constants file
+      .color('black');
+
+    Crafty.e("2D, Canvas, NavbarBattery, Color")
+      .attr({x: loc.x + 1, y: loc.y + 1})
+      .attr({h: 12})          // TODO
+      .color('green');
   } else {
     // Update Battery indicator
-    Crafty('NavbarBattery').get(0)
-      .textFont('size', '14px')
-      .text("Battery: " + pc.batteryLife);
+    Crafty('NavbarBattery Text').get(0)
+      .text("Battery: " + pc.batteryLife + "%");
+
+    Crafty('NavbarBattery Color').get(0)
+      .attr({w: 0.85 * pc.batteryLife});    // TODO
   }
 }
 
@@ -155,6 +167,7 @@ Crafty.scene('main', function (settings = null) {
     .bind('EnterFrame', function () {
       if (this.batteryLife <= 0) {
         loseLife.bind(this, "Battery Died")();
+        return;
       }
 
       drawNavbar(this);
@@ -163,7 +176,8 @@ Crafty.scene('main', function (settings = null) {
       stopMovement.bind(this, 'Solid')();
     })
     .onHit('Enemy', function () {
-      loseLife.bind(this, "You DED")();
+      loseLife.bind(this, "A Jovian got you")();
+      return;
     })
     .onHit('charger_sprite', function () {
       this.batteryLife = 100;
