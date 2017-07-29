@@ -1,0 +1,22 @@
+{
+  "name": "ld39-power",
+  "version": "1.0.0",
+  "description": "Ludum Dare 39: Running out of Power",
+  "author": "",
+  "main": "src/js/main.js",
+  "scripts": {
+    "test": "python -m http.server 4041"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shashwat986/LD39-Power.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shashwat986/LD39-Power/issues"
+  },
+  "homepage": "https://github.com/Shashwat986/LD39-Power",
+  "dependencies": {
+    "webpack": "^3.4.1"
+  }
+}
