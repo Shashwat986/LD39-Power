@@ -1,23 +1,61 @@
 export default {
-  maxWidth: 650,
-  maxHeight: 330,
+  gameWidth: 650,
+  headerHeight: 42,
+  headerPadding: 5,
+  gameHeight: 360,
   tileWidth: 32,
   tileHeight: 32,
   edgeThickness: 5,
+  maxLives: 3,
+
+  canvas: function () {
+    return {
+      topLeft: [0, this.headerHeight],
+      topRight: [this.gameWidth, this.headerHeight],
+      bottomLeft: [0, this.headerHeight + this.gameHeight],
+      bottomRight: [this.gameWidth, this.headerHeight + this.gameHeight]
+    };
+  },
+
+  canvasHeight: function () {
+    return this.headerHeight + this.gameHeight;
+  },
+
+  canvasWidth: function () {
+    return this.gameWidth;
+  },
+
+  numX: function () {
+    return parseInt((this.gameWidth - 2 * this.edgeThickness) / this.tileWidth) - 1;
+  },
+
+  numY: function () {
+    return parseInt((this.gameHeight - 2 * this.edgeThickness) / this.tileHeight) - 1;
+  },
 
   spriteXY: function (x, y) {
-    var numX = parseInt((this.maxWidth - 2 * this.edgeThickness) / this.tileWidth) - 1;
-    var numY = parseInt((this.maxHeight - 2 * this.edgeThickness) / this.tileHeight) - 1;
-    if (x > numX) x = numX;
+    if (x > this.numX) x = this.numX;
     if (x < 0) x = 0;
-    if (y > numY) y = numY;
+    if (y > this.numY) y = this.numY;
     if (y < 0) y = 0;
 
     return {
       x: this.edgeThickness + x * this.tileWidth,
-      y: this.edgeThickness + y * this.tileHeight,
+      y: this.edgeThickness + y * this.tileHeight + this.headerHeight,
       w: this.tileWidth,
       h: this.tileHeight
+    }
+  },
+
+  navbarX: function (x) {
+    if (x > this.numX) x = this.numX;
+    if (x < 0) x = 0;
+
+    return {
+      x: this.edgeThickness + x * this.tileWidth,
+      y: this.headerPadding,
+      w: this.headerHeight - 2 * this.headerPadding,
+      h: this.headerHeight - 2 * this.headerPadding,
     }
   }
 };

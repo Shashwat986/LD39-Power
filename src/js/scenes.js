@@ -1,74 +1,72 @@
 import gConsts from './game_constants';
+import { drawBorder, stopMovement } from './compo_helpers';
 
-Crafty.scene('main', function () {
-  Crafty.e("2D, Canvas, Color, Collision, Solid")
-    .attr({
-      x: 0,
-      y: 0,
-      w: gConsts.maxWidth,
-      h: gConsts.edgeThickness
-    })
-    .color('red');
+function drawNavbar (pc) {
+  if (Crafty('NavbarLives').length === 0) {
+    for (var i = 0; i < gConsts.maxLives ; i++) {
+      var c = Crafty.e(
+        "2D, Canvas, NavbarLives, " +
+        ((i < pc.lives) ? "player_sprite" : "dead_sprite")
+      )
+        .attr(gConsts.navbarX(i));
+    }
+  }
 
-  Crafty.e("2D, Canvas, Color, Collision, Solid")
-    .attr({
-      x: 0,
-      y: 0,
-      w: gConsts.edgeThickness,
-      h: gConsts.maxHeight
-    })
-    .color('red');
+  if (Crafty('NavbarBattery').length === 0) {
+    Crafty.e("2D, Canvas, NavbarBattery, Text")
+      .attr(gConsts.navbarX(8))
+      .text("Battery: " + pc.batteryLife);
+  } else {
+    Crafty('NavbarBattery').get(0)
+      .text("Battery: " + pc.batteryLife);
+  }
+}
 
-  Crafty.e("2D, Canvas, Color, Collision, Solid")
-    .attr({
-      x: gConsts.maxWidth - gConsts.edgeThickness,
-      y: 0,
-      w: gConsts.edgeThickness,
-      h: gConsts.maxHeight
-    })
-    .color('red');
+Crafty.scene('main', function (currentLives = null) {
+  if (currentLives === null)
+    currentLives = gConsts.maxLives;
 
-  Crafty.e("2D, Canvas, Color, Collision, Solid")
-    .attr({
-      x: 0,
-      y: gConsts.maxHeight - gConsts.edgeThickness,
-      w: gConsts.maxWidth,
-      h: gConsts.edgeThickness
-    })
-    .color('red');
+  drawBorder();
 
-  var small_sprite = Crafty.e("2D, Canvas, Fourway, Collision, player_sprite")
-    .attr(gConsts.spriteXY(110, 0))
+  var pc = Crafty.e("2D, Canvas, Fourway, Collision, player_sprite")
+    .attr(gConsts.spriteXY(0, 0))
+    .attr({ batteryLife: 100, lives: currentLives})
     .fourway(200)
-    .onHit('Solid', function (e) {
-      this.x -= this.dx;
-      if (this.hit('Solid')) {
-        this.x += this.dx;
-      } else return;
-      this.y -= this.dy;
-      if (this.hit('Solid')) {
-        this.y += this.dy;
-      } else return;
-      if (this.hit('Solid')) {
-        this.x -= this.dx;
-        this.y -= this.dy;
+    .bind('Moved', function () {
+      this.batteryLife -= 1;
+    })
+    .bind('EnterFrame', function () {
+      if (this.batteryLife <= 0) {
+        if (pc.lives > 0) {
+          Crafty.scene('main', pc.lives - 1);
+          return;
+        } else {
+          Crafty.scene('start');
+          return;
+        }
       }
-      //this.resetMotion();
-    });
 
+      drawNavbar(pc);
+    })
+    .onHit('Solid', function () {
+      stopMovement.bind(this, 'Solid')();
+    });
+  window.pc = pc;
+
+  drawNavbar(pc);
 });
 
 Crafty.scene('start', function () {
   Crafty.e("2D, Canvas, player_sprite")
-    .attr({x: 0, y: 0, w: 320, h: 320});
+    .attr({x: 0, y: gConsts.headerHeight, w: 320, h: 320});
 
   Crafty.e("2D, Canvas, Text")
-    .attr({x: 350, y: 0})
+    .attr({x: 350, y: gConsts.headerHeight})
     .text("Battery Pack")
     .textFont('size', '36px');
 
   Crafty.e("2D, DOM, Text") // Using DOM because that has word-wrap
-    .attr({x: 350, y: 50, w: 300})
+    .attr({x: 350, y: gConsts.headerHeight + 50, w: gConsts.canvasWidth() - 350 - 30})
     .text(
       "Leon is stranded on the planet Jupiter! " +
       "His battery has very limited power, and he can't travel without his jetpack." +
