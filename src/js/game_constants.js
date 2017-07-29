@@ -2,11 +2,16 @@ export default {
   gameWidth: 650,
   headerHeight: 42,
   headerPadding: 5,
-  gameHeight: 360,
+  gameHeight: 330,
   tileWidth: 32,
   tileHeight: 32,
   edgeThickness: 5,
   maxLives: 3,
+  batteryDrain: 1,
+
+  e1Speed: 50,
+  e2Speed: 50,
+  bulletSpeed: 150,
 
   canvas: function () {
     return {
@@ -34,9 +39,9 @@ export default {
   },
 
   spriteXY: function (x, y) {
-    if (x > this.numX) x = this.numX;
+    if (x > this.numX()) x = this.numX();
     if (x < 0) x = 0;
-    if (y > this.numY) y = this.numY;
+    if (y > this.numY()) y = this.numY();
     if (y < 0) y = 0;
 
     return {
@@ -48,7 +53,7 @@ export default {
   },
 
   navbarX: function (x) {
-    if (x > this.numX) x = this.numX;
+    if (x > this.numX()) x = this.numX();
     if (x < 0) x = 0;
 
     return {

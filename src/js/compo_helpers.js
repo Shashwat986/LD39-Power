@@ -54,3 +54,16 @@ export function stopMovement(componentString) {
   //this.resetMotion();
 }
 
+export function normalize (list) {
+  var val = 0.0;
+  for (var i = 0; i < list.length; i++) {
+    val += list[i] * list[i];
+  }
+  val = Math.sqrt(val);
+  if (val == 0) return list;
+  for (var i = 0; i < list.length; i++) {
+    list[i] = list[i] / val;
+  }
+
+  return list;
+}
