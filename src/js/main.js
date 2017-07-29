@@ -1,6 +1,8 @@
+import gConsts from './game_constants';
+
 var gameObject = document.getElementById('game');
 gameObject.innerHTML = "";
-Crafty.init(650, 330, gameObject);
+Crafty.init(gConsts.maxWidth, gConsts.maxHeight, gameObject);
 Crafty.background('#cba053');
 
 Crafty.paths({
