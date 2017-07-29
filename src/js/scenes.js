@@ -191,6 +191,25 @@ Crafty.scene('msg', function (settings) {
     .bind('Click', function () {
       Crafty.scene(settings.next, settings.attr);
     });
+
+  Crafty.e("2D, DOM, Color, Text, Mouse")
+    .attr({
+      x: gConsts.canvasWidth() - 130,
+      y: gConsts.canvasHeight() - 30,
+      w: 150,
+      h: 30
+    })
+    .color('green')
+    .text('CONTINUE')
+    .textFont('size', '20px')
+    .css({
+      "border": "1px solid",
+      "border-radius": "4px",
+      "padding": "5px"
+    })
+    .bind('Click', function () {
+      Crafty.scene(settings.next, settings.attr);
+    });
 });
 
 Crafty.scene('start', function () {
@@ -214,10 +233,67 @@ Crafty.scene('start', function () {
     )
     .textFont('size', '18px');
 
-  Crafty('2D').each(function() {
-    this.addComponent('Mouse')
-      .bind('Click', function () {
-        Crafty.scene('main');
-      });
-  });
+  Crafty.e("2D, DOM, Color, Text, Mouse")
+    .attr({
+      x: gConsts.canvasWidth() - 70,
+      y: gConsts.canvasHeight() - 30,
+      w: 100,
+      h: 30
+    })
+    .color('green')
+    .text('NEXT')
+    .textFont('size', '20px')
+    .css({
+      "border": "1px solid",
+      "border-radius": "4px",
+      "padding": "5px"
+    })
+    .bind('Click', function () {
+      Crafty.scene('start2');
+    });
+});
+
+Crafty.scene('start2', function () {
+  Crafty.e("2D, Canvas, portal_sprite")
+    .attr({x: 0, y: gConsts.headerHeight + 50, w: 200, h: 200});
+
+  Crafty.e("2D, DOM, Text")
+    .attr({x: 0, y: gConsts.headerHeight, w: 200})
+    .text("This is the portal.")
+    .textFont('size', '20px');
+
+  Crafty.e("2D, Canvas, charger_sprite")
+    .attr({x: 210, y: gConsts.headerHeight + 50, w: 200, h: 200});
+
+  Crafty.e("2D, DOM, Text")
+    .attr({x: 210, y: gConsts.headerHeight, w: 200})
+    .text("This is a charging station")
+    .textFont('size', '20px');
+
+  Crafty.e("2D, Canvas, e1_sprite")
+    .attr({x: 420, y: gConsts.headerHeight + 50, w: 200, h: 200});
+
+  Crafty.e("2D, DOM, Text")
+    .attr({x: 420, y: gConsts.headerHeight, w: 200})
+    .text("This is a Jovian. BEWARE!")
+    .textFont('size', '20px');
+
+  Crafty.e("2D, DOM, Color, Text, Mouse")
+    .attr({
+      x: gConsts.canvasWidth() - 85,
+      y: gConsts.canvasHeight() - 30,
+      w: 100,
+      h: 30
+    })
+    .color('green')
+    .text('START')
+    .textFont('size', '20px')
+    .css({
+      "border": "1px solid",
+      "border-radius": "4px",
+      "padding": "5px"
+    })
+    .bind('Click', function () {
+      Crafty.scene('main');
+    });
 });
