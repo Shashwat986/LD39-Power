@@ -64,34 +64,6 @@ function drawNavbar (pc) {
   }
 }
 
-function getLevelSettings (level) {
-  return {
-    portal: [19, 9],
-    charger: [
-      [6, 6],
-      [9, 0],
-      [5, 8],
-      [14, 5]
-    ],
-    enemy1: [
-      {
-        pos: [4, 4],
-        speed: [-1, 2]
-      },
-      {
-        pos: [17, 0],
-        speed: [0, 1]
-      }
-    ],
-    enemy2: [
-      {
-        pos: [14, 0],
-        speed: [0, 1]
-      }
-    ]
-  };
-}
-
 Crafty.scene('main', function (settings = null) {
   if (!settings || typeof settings !== 'object')
     settings = {};
@@ -102,14 +74,14 @@ Crafty.scene('main', function (settings = null) {
 
   drawBorder();
 
-  var levelSettings = getLevelSettings(settings.currentLevel);
+  var levelSettings = gameInfo.level[settings.currentLevel];
 
   // Draw Portal
   Crafty.e("2D, Canvas, Collision, portal_sprite")
     .attr(gConsts.spriteXY.apply(gConsts, levelSettings.portal));
 
   // Draw Charging Points
-  for (var i = 0; i < levelSettings.charger.length; i++) {
+  for (var i = 0; levelSettings.charger != null && i < levelSettings.charger.length; i++) {
     var elem = levelSettings.charger[i];
 
     Crafty.e("2D, Canvas, Collision, charger_sprite")
@@ -117,7 +89,7 @@ Crafty.scene('main', function (settings = null) {
   }
 
   // Draw Enemy 1
-  for (var i = 0; i < levelSettings.enemy1.length; i++) {
+  for (var i = 0; levelSettings.enemy1 != null && i < levelSettings.enemy1.length; i++) {
     var elem = levelSettings.enemy1[i];
     elem.speed = normalize(elem.speed);
 
@@ -138,7 +110,7 @@ Crafty.scene('main', function (settings = null) {
   }
 
   // Draw Enemy 2
-  for (var i = 0; i < levelSettings.enemy2.length; i++) {
+  for (var i = 0; levelSettings.enemy2 != null && i < levelSettings.enemy2.length; i++) {
     var elem = levelSettings.enemy2[i];
     elem.speed = normalize(elem.speed);
 
