@@ -30,14 +30,16 @@ function drawNavbar (pc) {
 
   if (Crafty('NavbarLives').length === 0) {
     for (var i = 0; i < gConsts.maxLives ; i++) {
-      var c = Crafty.e(
+      Crafty.e(
         "2D, Canvas, NavbarLives, " +
         ((i < pc.lives) ? "player_sprite" : "dead_sprite")
       )
         .attr(gConsts.navbarX(i));
     }
   }
+}
 
+function updateBattery(pc) {
   if (Crafty('NavbarBattery').length === 0) {
     var loc = gConsts.navbarX(4)
 
@@ -215,7 +217,7 @@ Crafty.scene('main', function (settings = null) {
         return;
       }
 
-      drawNavbar(this);
+      updateBattery(this);
     })
     .onHit('Solid', function () {
       stopMovement.bind(this, 'Solid')();
