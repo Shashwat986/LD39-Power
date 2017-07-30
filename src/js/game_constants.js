@@ -6,12 +6,16 @@ export default {
   tileWidth: 32,
   tileHeight: 32,
   edgeThickness: 5,
+
   maxLives: 3,
   batteryDrain: 1,
+  playerSpeed: 200,
 
   e1Speed: 50,
   e2Speed: 50,
   bulletSpeed: 150,
+  bulletFreq: 800,
+  bulletFreezeTime: 500,
 
   canvas: function () {
     return {

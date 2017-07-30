@@ -42,15 +42,15 @@ export function stopMovement(componentString) {
   this.x -= this.dx;
   if (this.hit(componentString)) {
     this.x += this.dx;
-  } else return;
+  } else return "X";
   this.y -= this.dy;
   if (this.hit(componentString)) {
     this.y += this.dy;
-  } else return;
-  if (this.hit(componentString)) {
-    this.x -= this.dx;
-    this.y -= this.dy;
-  }
+  } else return "Y";
+
+  this.x -= this.dx;
+  this.y -= this.dy;
+  return "XY";
   //this.resetMotion();
 }
 
@@ -66,4 +66,14 @@ export function normalize (list) {
   }
 
   return list;
+}
+
+export function randomDirection (speed) {
+  var x = 2 * (Math.random() - 0.5);
+  var y = Math.sqrt(1 - x * x) * ((Math.random() < 0.5) ? -1 : 1);
+
+  return {
+    vx: x * speed,
+    vy: y * speed
+  };
 }

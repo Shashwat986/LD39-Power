@@ -1,5 +1,6 @@
 import gConsts from './game_constants';
-import { drawBorder, stopMovement, normalize } from './compo_helpers';
+import gameInfo from './game_info';
+import { drawBorder, stopMovement, normalize, randomDirection } from './compo_helpers';
 
 function loseLife (msg) {
   if (this.lives > 0) {
@@ -127,9 +128,12 @@ Crafty.scene('main', function (settings = null) {
         vy: elem.speed[1] * gConsts.e1Speed
       })
       .onHit('Solid', function () {
-        // TODO
-        this.vx = -this.vx;
-        this.vy = -this.vy;
+        var dirBlocked = stopMovement.bind(this, 'Solid')();
+
+        if (dirBlocked === 'X' || dirBlocked === 'XY')
+          this.vx = -this.vx;
+        if (dirBlocked === 'Y' || dirBlocked === 'XY')
+          this.vy = -this.vy;
       });
   }
 
@@ -144,10 +148,34 @@ Crafty.scene('main', function (settings = null) {
         vx: elem.speed[0] * gConsts.e1Speed,
         vy: elem.speed[1] * gConsts.e1Speed
       })
+      .attr({ timeSinceBullet: 0.0 })
       .onHit('Solid', function () {
+        var dirBlocked = stopMovement.bind(this, 'Solid')();
+
         // TODO
-        this.vx = -this.vx;
-        this.vy = -this.vy;
+        // var newDir = randomDirection(gConsts.e1Speed);
+
+        if (dirBlocked === 'X' || dirBlocked === 'XY')
+          this.vx = -this.vx;
+        if (dirBlocked === 'Y' || dirBlocked === 'XY')
+          this.vy = -this.vy;
+      })
+      .bind('EnterFrame', function (e) {
+        this.timeSinceBullet += e.dt;
+        if (this.timeSinceBullet > gConsts.bulletFreq) {
+          this.timeSinceBullet = 0;
+
+          var bullet = gameInfo.bullet(Math.random() < 0.5 ? 'killing' : 'freezing');
+
+          Crafty.e("2D, Canvas, Collision, Bullet, Motion, Color")
+            .attr({x: this.x, y: this.y, h: 5, w: 5})
+            .attr({kind: bullet.kind})
+            .attr(randomDirection(gConsts.bulletSpeed))
+            .onHit('Solid', function () {
+              this.destroy();
+            })
+            .color(bullet.color);
+        }
       });
       // TODO: Make E2 fire bullets
   }
@@ -158,10 +186,16 @@ Crafty.scene('main', function (settings = null) {
     .attr({
       batteryLife: 100,
       lives: settings.currentLives,
-      level: settings.currentLevel
+      level: settings.currentLevel,
+      frozen: false
     })
-    .fourway(200)
-    .bind('Moved', function () {
+    .fourway(gConsts.playerSpeed)
+    .bind('Moved', function (e) {
+      if (this.frozen) {
+        this[e.axis] = e.oldValue;
+        return;   //TODO
+      }
+
       this.batteryLife -= gConsts.batteryDrain;
     })
     .bind('EnterFrame', function () {
@@ -178,6 +212,26 @@ Crafty.scene('main', function (settings = null) {
     .onHit('Enemy', function () {
       loseLife.bind(this, "A Jovian got you")();
       return;
+    })
+    .onHit('Bullet', function (e) {
+      var bulletKind = e[0].obj.kind;
+      e[0].obj.destroy();
+
+      switch (bulletKind) {
+        case 'killing':
+          loseLife.bind(this, "A bullet got you")();
+          break;
+        case 'freezing':
+          //this.batteryLife -= 10;
+          this.frozen = true;
+          this.timeout(function () {
+            this.frozen = false;
+            // TODO: Sprite
+          }, gConsts.bulletFreezeTime);
+          break;
+
+        default:
+      }
     })
     .onHit('charger_sprite', function () {
       this.batteryLife = 100;
