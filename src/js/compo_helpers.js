@@ -77,3 +77,19 @@ export function randomDirection (speed) {
     vy: y * speed
   };
 }
+
+export function getMessage (situation) {
+  switch (situation) {
+    case 'battery':
+      return "Your jetpack's battery has run out! " +
+        "The only direction you're going now, " +
+        "is straight down...";
+    case 'enemy':
+      return "You have been captured and eaten by " +
+        "the Jovian. If it's any consolation, " +
+        "you were delicious.";
+    case 'bullet':
+      return "You have been struck by a Jovian bullet. " +
+        "Ideas may be bulletproof, but you sure aren't.";
+  }
+}

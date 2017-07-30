@@ -1,11 +1,12 @@
 import gConsts from './game_constants';
 import gameInfo from './game_info';
-import { drawBorder, stopMovement, normalize, randomDirection } from './compo_helpers';
+import { drawBorder, stopMovement, normalize, randomDirection, getMessage } from './compo_helpers';
 
 function loseLife (msg) {
   if (this.lives > 0) {
     Crafty.scene('msg', {
-      text: msg,
+      text: "You lose a life",
+      info: msg,
       next: "main",
       attr: {
         currentLevel: this.level,
@@ -14,7 +15,8 @@ function loseLife (msg) {
     });
   } else {
     Crafty.scene('msg', {
-      text: msg + ", Game Over!",
+      text: "Game Over",
+      info: msg,
       next: "start"
     });
   }
@@ -217,7 +219,7 @@ Crafty.scene('main', function (settings = null) {
     })
     .bind('EnterFrame', function () {
       if (this.batteryLife <= 0) {
-        loseLife.bind(this, "Battery Died")();
+        loseLife.bind(this, getMessage('battery'))();
         return;
       }
 
@@ -227,7 +229,7 @@ Crafty.scene('main', function (settings = null) {
       stopMovement.bind(this, 'Solid')();
     })
     .onHit('Enemy', function () {
-      loseLife.bind(this, "A Jovian got you")();
+      loseLife.bind(this, getMessage('enemy'))();
       return;
     })
     .onHit('Bullet', function (e) {
@@ -236,7 +238,7 @@ Crafty.scene('main', function (settings = null) {
 
       switch (bulletKind) {
         case 'killing':
-          loseLife.bind(this, "A bullet got you")();
+          loseLife.bind(this, getMessage('bullet'))();
           break;
         case 'freezing':
           //this.batteryLife -= 10;
@@ -257,12 +259,16 @@ Crafty.scene('main', function (settings = null) {
         e[0].obj.destroy();
     })
     .onHit('portal_sprite', function () {
-      var text = "Congrats! Next Level";
+      var info = "You have made it to the portal. " +
+        "Let's take you to Level " + (this.level + 1);
       if (this.level === gameInfo.maxLevel) {
-        text = "Congrats! You Won! You had " + this.lives + " lives left! Good Job!";
+        info = "Congrats! You Won! " +
+          "You had " + this.lives + " lives left! " +
+          "Good Job!";
       }
       Crafty.scene('msg', {
-        text: text,
+        text: "Level Cleared",
+        info: info,
         next: "main",
         attr: {
           currentLevel: this.level + 1,
@@ -278,7 +284,7 @@ Crafty.scene('main', function (settings = null) {
 Crafty.scene('msg', function (settings) {
   Crafty.e("2D, DOM, Text, Mouse")
     .attr({
-      x: 30,
+      x: 30 + gConsts.edgeThickness,
       y: gConsts.headerHeight,
       w: (gConsts.canvasWidth() - 2 * gConsts.edgeThickness) - 30
     })
@@ -288,6 +294,21 @@ Crafty.scene('msg', function (settings) {
     .bind('Click', function () {
       Crafty.scene(settings.next, settings.attr);
     });
+
+  if (settings.info) {
+    Crafty.e("2D, DOM, Text, Mouse")
+      .attr({
+        x: 30 + gConsts.edgeThickness,
+        y: gConsts.headerHeight + 50,
+        w: (gConsts.canvasWidth() - 2 * gConsts.edgeThickness) - 30
+      })
+      .textAlign('center')
+      .textFont('size', '20px')
+      .text(settings.info)
+      .bind('Click', function () {
+        Crafty.scene(settings.next, settings.attr);
+      });
+  }
 
   Crafty.e("2D, DOM, Color, Text, Mouse")
     .attr({
@@ -408,6 +429,20 @@ Crafty.scene('start2', function () {
     .textAlign("center")
     .text("This is a Jovian. BEWARE!")
     .textFont('size', '20px');
+
+  Crafty.e("2D, DOM, Text")
+    .attr({
+      x: gConsts.edgeThickness,
+      y: gConsts.headerHeight + 50 + colWidth,
+      w: 3 * colWidth
+    })
+    .textAlign("center")
+    .text(
+      "Use arrow keys to move up, down, left, and right. " + "<br/>" +
+      "Note that pressing two arrow keys to move diagonally will use the same " +
+      "amount of battery as moving first one way then the other"
+    )
+    .textFont('size', '18px');
 
   Crafty.e("2D, DOM, Color, Text, Mouse")
     .attr({
