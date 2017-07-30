@@ -39,7 +39,7 @@ function drawNavbar (pc) {
   }
 
   if (Crafty('NavbarBattery').length === 0) {
-    var loc = gConsts.navbarX(8)
+    var loc = gConsts.navbarX(4)
 
     Crafty.e("2D, Canvas, NavbarBattery, Text")
       .attr({x: loc.x, y: loc.y + 16})
@@ -256,7 +256,7 @@ Crafty.scene('main', function (settings = null) {
         next: "main",
         attr: {
           currentLevel: this.level + 1,
-          currentLives: gConsts.maxLives
+          currentLives: this.lives
         }
       });
     });
