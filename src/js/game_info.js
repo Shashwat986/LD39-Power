@@ -16,8 +16,10 @@ export default {
     return ans;
   },
 
+  maxLevel: 10,
   level: {
     1: {
+      hint: "The purple charging stations can be used only once! Tread carefully",
       portal: [19, 9],
       charger: [
         [6, 6],
@@ -97,6 +99,7 @@ export default {
       ]
     },
     4: {
+      hint: "Beware the Jovian bullets: the Blue bullets freeze the user, but the black ones KILL",
       portal: [19, 9],
       charger: [
         [6, 6],
@@ -203,6 +206,7 @@ export default {
       ]
     },
     7: {
+      hint: "Choose wisely! The first charger you go to may very well be your last!",
       portal: [19, 9],
       oneTimeCharger: [
         [13, 0],
@@ -212,6 +216,7 @@ export default {
       ]
     },
     8: {
+      hint: "What're you looking at me for? RUN!!!",
       portal: [19, 9],
       charger: [
         [5, 3],
@@ -306,5 +311,9 @@ export default {
         }
       ]
     },
+    10: {
+      pc: [5, 5],
+      portal: [15, 5]
+    }
   }
 }

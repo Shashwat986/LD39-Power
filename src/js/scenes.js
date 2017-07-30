@@ -20,22 +20,26 @@ function loseLife (msg) {
   }
 }
 
-function drawNavbar (pc) {
-  if (Crafty('Level').length === 0) {
-    Crafty.e("2D, Canvas, Text")
-      .attr(gConsts.navbarX(17))
-      .textFont('size', '20px')
-      .text("Level: " + pc.level);
+function drawNavbar (pc, hint = null) {
+  Crafty.e("2D, Canvas, Text")
+    .attr(gConsts.navbarX(17))
+    .textFont('size', '20px')
+    .text("Level: " + pc.level);
+
+  for (var i = 0; i < gConsts.maxLives ; i++) {
+    Crafty.e(
+      "2D, Canvas, NavbarLives, " +
+      ((i < pc.lives) ? "player_sprite" : "dead_sprite")
+    )
+      .attr(gConsts.navbarX(i));
   }
 
-  if (Crafty('NavbarLives').length === 0) {
-    for (var i = 0; i < gConsts.maxLives ; i++) {
-      Crafty.e(
-        "2D, Canvas, NavbarLives, " +
-        ((i < pc.lives) ? "player_sprite" : "dead_sprite")
-      )
-        .attr(gConsts.navbarX(i));
-    }
+  if (hint) {
+    Crafty.e("2D, DOM, Text")
+      .attr(gConsts.navbarX(8))
+      .attr({w: gConsts.tileWidth * 7})
+      .textFont('size', '16px')
+      .text("<b>Hint:</b> " + hint);
   }
 }
 
@@ -253,8 +257,12 @@ Crafty.scene('main', function (settings = null) {
         e[0].obj.destroy();
     })
     .onHit('portal_sprite', function () {
+      var text = "Congrats! Next Level";
+      if (this.level === gameInfo.maxLevel) {
+        text = "Congrats! You Won! You had " + this.lives + " lives left! Good Job!";
+      }
       Crafty.scene('msg', {
-        text: "Congrats! Next Level",
+        text: text,
         next: "main",
         attr: {
           currentLevel: this.level + 1,
@@ -264,7 +272,7 @@ Crafty.scene('main', function (settings = null) {
     });
   window.pc = pc;
 
-  drawNavbar(pc);
+  drawNavbar(pc, levelSettings.hint);
 });
 
 Crafty.scene('msg', function (settings) {
@@ -303,13 +311,6 @@ Crafty.scene('msg', function (settings) {
 });
 
 Crafty.scene('start', function () {
-  Crafty.e("2D, Canvas, Text, Persist, Mouse")
-    .attr({x: gConsts.canvasWidth() - 25, y: 0})
-    .text("Mute")
-    .bind('Click', function () {
-      Crafty.audio.toggleMute();
-    });
-
   Crafty.e("2D, Canvas, player_sprite")
     .attr({x: 0, y: gConsts.headerHeight, w: 320, h: 320});
 
