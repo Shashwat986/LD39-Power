@@ -154,11 +154,13 @@ Crafty.load(__WEBPACK_IMPORTED_MODULE_1__assets__["a" /* default */], function (
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game_constants__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__compo_helpers__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__game_info__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__compo_helpers__ = __webpack_require__(4);
 
 
 
-function loseLife (msg = "Battery Over") {
+
+function loseLife (msg) {
   if (this.lives > 0) {
     Crafty.scene('msg', {
       text: msg,
@@ -168,11 +170,11 @@ function loseLife (msg = "Battery Over") {
         currentLives: this.lives - 1
       }
     });
-    return;
   } else {
-    // TODO: Change to better end screen
-    Crafty.scene('start');
-    return;
+    Crafty.scene('msg', {
+      text: msg + ", Game Over!",
+      next: "start"
+    });
   }
 }
 
@@ -194,46 +196,30 @@ function drawNavbar (pc) {
     }
   }
 
-  // TODO: Make this look better
   if (Crafty('NavbarBattery').length === 0) {
+    var loc = __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].navbarX(8)
+
     Crafty.e("2D, Canvas, NavbarBattery, Text")
-      .attr(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].navbarX(8))
-      .textFont('size', '14px')
-      .text("Battery: " + pc.batteryLife);
+      .attr({x: loc.x, y: loc.y + 16})
+      .textFont('size', '14px');
+
+    Crafty.e("2D, Canvas, NavbarBatteryContainer, Color")
+      .attr(loc)
+      .attr({h: 14, w: 87})   // TODO: Move to constants file
+      .color('black');
+
+    Crafty.e("2D, Canvas, NavbarBattery, Color")
+      .attr({x: loc.x + 1, y: loc.y + 1})
+      .attr({h: 12})          // TODO
+      .color('green');
   } else {
     // Update Battery indicator
-    Crafty('NavbarBattery').get(0)
-      .textFont('size', '14px')
-      .text("Battery: " + pc.batteryLife);
-  }
-}
+    Crafty('NavbarBattery Text').get(0)
+      .text("Battery: " + pc.batteryLife + "%");
 
-function getLevelSettings (level) {
-  return {
-    portal: [19, 9],
-    charger: [
-      [6, 6],
-      [9, 0],
-      [5, 8],
-      [14, 5]
-    ],
-    enemy1: [
-      {
-        pos: [4, 4],
-        speed: [-1, 2]
-      },
-      {
-        pos: [17, 0],
-        speed: [0, 1]
-      }
-    ],
-    enemy2: [
-      {
-        pos: [14, 0],
-        speed: [0, 1]
-      }
-    ]
-  };
+    Crafty('NavbarBattery Color').get(0)
+      .attr({w: 0.85 * pc.batteryLife});    // TODO
+  }
 }
 
 Crafty.scene('main', function (settings = null) {
@@ -244,16 +230,16 @@ Crafty.scene('main', function (settings = null) {
   if (settings.currentLevel == null)
     settings.currentLevel = 1;
 
-  Object(__WEBPACK_IMPORTED_MODULE_1__compo_helpers__["a" /* drawBorder */])();
+  Object(__WEBPACK_IMPORTED_MODULE_2__compo_helpers__["a" /* drawBorder */])();
 
-  var levelSettings = getLevelSettings(settings.currentLevel);
+  var levelSettings = __WEBPACK_IMPORTED_MODULE_1__game_info__["a" /* default */].level[settings.currentLevel];
 
   // Draw Portal
   Crafty.e("2D, Canvas, Collision, portal_sprite")
     .attr(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].spriteXY.apply(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */], levelSettings.portal));
 
   // Draw Charging Points
-  for (var i = 0; i < levelSettings.charger.length; i++) {
+  for (var i = 0; levelSettings.charger != null && i < levelSettings.charger.length; i++) {
     var elem = levelSettings.charger[i];
 
     Crafty.e("2D, Canvas, Collision, charger_sprite")
@@ -261,9 +247,9 @@ Crafty.scene('main', function (settings = null) {
   }
 
   // Draw Enemy 1
-  for (var i = 0; i < levelSettings.enemy1.length; i++) {
+  for (var i = 0; levelSettings.enemy1 != null && i < levelSettings.enemy1.length; i++) {
     var elem = levelSettings.enemy1[i];
-    elem.speed = Object(__WEBPACK_IMPORTED_MODULE_1__compo_helpers__["b" /* normalize */])(elem.speed);
+    elem.speed = Object(__WEBPACK_IMPORTED_MODULE_2__compo_helpers__["b" /* normalize */])(elem.speed);
 
     Crafty.e("2D, Canvas, Collision, Enemy, Motion, e1_sprite")
       .attr(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].spriteXY.apply(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */], elem.pos))
@@ -272,16 +258,19 @@ Crafty.scene('main', function (settings = null) {
         vy: elem.speed[1] * __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].e1Speed
       })
       .onHit('Solid', function () {
-        // TODO
-        this.vx = -this.vx;
-        this.vy = -this.vy;
+        var dirBlocked = __WEBPACK_IMPORTED_MODULE_2__compo_helpers__["d" /* stopMovement */].bind(this, 'Solid')();
+
+        if (dirBlocked === 'X' || dirBlocked === 'XY')
+          this.vx = -this.vx;
+        if (dirBlocked === 'Y' || dirBlocked === 'XY')
+          this.vy = -this.vy;
       });
   }
 
   // Draw Enemy 2
-  for (var i = 0; i < levelSettings.enemy2.length; i++) {
+  for (var i = 0; levelSettings.enemy2 != null && i < levelSettings.enemy2.length; i++) {
     var elem = levelSettings.enemy2[i];
-    elem.speed = Object(__WEBPACK_IMPORTED_MODULE_1__compo_helpers__["b" /* normalize */])(elem.speed);
+    elem.speed = Object(__WEBPACK_IMPORTED_MODULE_2__compo_helpers__["b" /* normalize */])(elem.speed);
 
     Crafty.e("2D, Canvas, Collision, Enemy, Motion, e2_sprite")
       .attr(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].spriteXY.apply(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */], elem.pos))
@@ -289,10 +278,34 @@ Crafty.scene('main', function (settings = null) {
         vx: elem.speed[0] * __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].e1Speed,
         vy: elem.speed[1] * __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].e1Speed
       })
+      .attr({ timeSinceBullet: 0.0 })
       .onHit('Solid', function () {
+        var dirBlocked = __WEBPACK_IMPORTED_MODULE_2__compo_helpers__["d" /* stopMovement */].bind(this, 'Solid')();
+
         // TODO
-        this.vx = -this.vx;
-        this.vy = -this.vy;
+        // var newDir = randomDirection(gConsts.e1Speed);
+
+        if (dirBlocked === 'X' || dirBlocked === 'XY')
+          this.vx = -this.vx;
+        if (dirBlocked === 'Y' || dirBlocked === 'XY')
+          this.vy = -this.vy;
+      })
+      .bind('EnterFrame', function (e) {
+        this.timeSinceBullet += e.dt;
+        if (this.timeSinceBullet > __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].bulletFreq) {
+          this.timeSinceBullet = 0;
+
+          var bullet = __WEBPACK_IMPORTED_MODULE_1__game_info__["a" /* default */].bullet(Math.random() < 0.5 ? 'killing' : 'freezing');
+
+          Crafty.e("2D, Canvas, Collision, Bullet, Motion, Color")
+            .attr({x: this.x, y: this.y, h: 5, w: 5})
+            .attr({kind: bullet.kind})
+            .attr(Object(__WEBPACK_IMPORTED_MODULE_2__compo_helpers__["c" /* randomDirection */])(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].bulletSpeed))
+            .onHit('Solid', function () {
+              this.destroy();
+            })
+            .color(bullet.color);
+        }
       });
       // TODO: Make E2 fire bullets
   }
@@ -303,24 +316,52 @@ Crafty.scene('main', function (settings = null) {
     .attr({
       batteryLife: 100,
       lives: settings.currentLives,
-      level: settings.currentLevel
+      level: settings.currentLevel,
+      frozen: false
     })
-    .fourway(200)
-    .bind('Moved', function () {
+    .fourway(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].playerSpeed)
+    .bind('Moved', function (e) {
+      if (this.frozen) {
+        this[e.axis] = e.oldValue;
+        return;   //TODO
+      }
+
       this.batteryLife -= __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].batteryDrain;
     })
     .bind('EnterFrame', function () {
       if (this.batteryLife <= 0) {
         loseLife.bind(this, "Battery Died")();
+        return;
       }
 
       drawNavbar(this);
     })
     .onHit('Solid', function () {
-      __WEBPACK_IMPORTED_MODULE_1__compo_helpers__["c" /* stopMovement */].bind(this, 'Solid')();
+      __WEBPACK_IMPORTED_MODULE_2__compo_helpers__["d" /* stopMovement */].bind(this, 'Solid')();
     })
     .onHit('Enemy', function () {
-      loseLife.bind(this, "You DED")();
+      loseLife.bind(this, "A Jovian got you")();
+      return;
+    })
+    .onHit('Bullet', function (e) {
+      var bulletKind = e[0].obj.kind;
+      e[0].obj.destroy();
+
+      switch (bulletKind) {
+        case 'killing':
+          loseLife.bind(this, "A bullet got you")();
+          break;
+        case 'freezing':
+          //this.batteryLife -= 10;
+          this.frozen = true;
+          this.timeout(function () {
+            this.frozen = false;
+            // TODO: Sprite
+          }, __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].bulletFreezeTime);
+          break;
+
+        default:
+      }
     })
     .onHit('charger_sprite', function () {
       this.batteryLife = 100;
@@ -348,6 +389,26 @@ Crafty.scene('msg', function (settings) {
     .bind('Click', function () {
       Crafty.scene(settings.next, settings.attr);
     });
+
+  Crafty.e("2D, DOM, Color, Text, Mouse")
+    .attr({
+      x: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].canvasWidth() - 130,
+      y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].canvasHeight() - 30,
+      w: 150,
+      h: 30
+    })
+    .color('green')
+    .text('CONTINUE')
+    .textFont('size', '20px')
+    .css({
+      "border": "1px solid",
+      "border-radius": "4px",
+      "cursor": "pointer",
+      "padding": "5px"
+    })
+    .bind('Click', function () {
+      Crafty.scene(settings.next, settings.attr);
+    });
 });
 
 Crafty.scene('start', function () {
@@ -371,12 +432,71 @@ Crafty.scene('start', function () {
     )
     .textFont('size', '18px');
 
-  Crafty('2D').each(function() {
-    this.addComponent('Mouse')
-      .bind('Click', function () {
-        Crafty.scene('main');
-      });
-  });
+  Crafty.e("2D, DOM, Color, Text, Mouse")
+    .attr({
+      x: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].canvasWidth() - 70,
+      y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].canvasHeight() - 30,
+      w: 100,
+      h: 30
+    })
+    .color('green')
+    .text('NEXT')
+    .textFont('size', '20px')
+    .css({
+      "border": "1px solid",
+      "border-radius": "4px",
+      "padding": "5px",
+      "cursor": "pointer"
+    })
+    .bind('Click', function () {
+      Crafty.scene('start2');
+    });
+});
+
+Crafty.scene('start2', function () {
+  Crafty.e("2D, Canvas, portal_sprite")
+    .attr({x: 0, y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].headerHeight + 50, w: 200, h: 200});
+
+  Crafty.e("2D, DOM, Text")
+    .attr({x: 0, y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].headerHeight, w: 200})
+    .text("This is the portal.")
+    .textFont('size', '20px');
+
+  Crafty.e("2D, Canvas, charger_sprite")
+    .attr({x: 210, y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].headerHeight + 50, w: 200, h: 200});
+
+  Crafty.e("2D, DOM, Text")
+    .attr({x: 210, y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].headerHeight, w: 200})
+    .text("This is a charging station")
+    .textFont('size', '20px');
+
+  Crafty.e("2D, Canvas, e1_sprite")
+    .attr({x: 420, y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].headerHeight + 50, w: 200, h: 200});
+
+  Crafty.e("2D, DOM, Text")
+    .attr({x: 420, y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].headerHeight, w: 200})
+    .text("This is a Jovian. BEWARE!")
+    .textFont('size', '20px');
+
+  Crafty.e("2D, DOM, Color, Text, Mouse")
+    .attr({
+      x: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].canvasWidth() - 85,
+      y: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].canvasHeight() - 30,
+      w: 100,
+      h: 30
+    })
+    .color('green')
+    .text('START')
+    .textFont('size', '20px')
+    .css({
+      "border": "1px solid",
+      "border-radius": "4px",
+      "cursor": "pointer",
+      "padding": "5px"
+    })
+    .bind('Click', function () {
+      Crafty.scene('main');
+    });
 });
 
 
@@ -393,12 +513,16 @@ Crafty.scene('start', function () {
   tileWidth: 32,
   tileHeight: 32,
   edgeThickness: 5,
+
   maxLives: 3,
   batteryDrain: 1,
+  playerSpeed: 200,
 
   e1Speed: 50,
   e2Speed: 50,
   bulletSpeed: 150,
+  bulletFreq: 800,
+  bulletFreezeTime: 500,
 
   canvas: function () {
     return {
@@ -459,8 +583,9 @@ Crafty.scene('start', function () {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = drawBorder;
-/* harmony export (immutable) */ __webpack_exports__["c"] = stopMovement;
+/* harmony export (immutable) */ __webpack_exports__["d"] = stopMovement;
 /* harmony export (immutable) */ __webpack_exports__["b"] = normalize;
+/* harmony export (immutable) */ __webpack_exports__["c"] = randomDirection;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game_constants__ = __webpack_require__(3);
 
 
@@ -506,15 +631,15 @@ function stopMovement(componentString) {
   this.x -= this.dx;
   if (this.hit(componentString)) {
     this.x += this.dx;
-  } else return;
+  } else return "X";
   this.y -= this.dy;
   if (this.hit(componentString)) {
     this.y += this.dy;
-  } else return;
-  if (this.hit(componentString)) {
-    this.x -= this.dx;
-    this.y -= this.dy;
-  }
+  } else return "Y";
+
+  this.x -= this.dx;
+  this.y -= this.dy;
+  return "XY";
   //this.resetMotion();
 }
 
@@ -531,6 +656,103 @@ function normalize (list) {
 
   return list;
 }
+
+function randomDirection (speed) {
+  var x = 2 * (Math.random() - 0.5);
+  var y = Math.sqrt(1 - x * x) * ((Math.random() < 0.5) ? -1 : 1);
+
+  return {
+    vx: x * speed,
+    vy: y * speed
+  };
+}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  bullet: function (kind) {
+    var ans = {
+      kind: kind
+    };
+    switch (kind) {
+      case 'freezing':
+        ans.color = 'cyan';
+        break;
+      case 'killing':
+        ans.color = 'black';
+        break;
+      default:
+    }
+
+    return ans;
+  },
+
+  level: {
+    1: {
+      portal: [19, 9],
+      charger: [
+        [6, 6],
+        [9, 0],
+        [5, 8],
+        [14, 5],
+        [16, 0],
+        [10, 9]
+      ]
+    },
+    2: {
+      portal: [19, 9],
+      charger: [
+        [6, 6],
+        [9, 0],
+        [5, 8],
+        [14, 5]
+      ],
+      enemy1: [
+        {
+          pos: [4, 4],
+          speed: [-1, 2]
+        },
+        {
+          pos: [17, 0],
+          speed: [0, 1]
+        },
+        {
+          pos: [14, 0],
+          speed: [0, 1]
+        }
+      ]
+    },
+    3: {
+      portal: [19, 9],
+      charger: [
+        [6, 6],
+        [9, 0],
+        [5, 8],
+        [14, 5]
+      ],
+      enemy1: [
+        {
+          pos: [4, 4],
+          speed: [-1, 2]
+        },
+        {
+          pos: [17, 0],
+          speed: [0, 1]
+        }
+      ],
+      enemy2: [
+        {
+          pos: [14, 0],
+          speed: [0, 1]
+        }
+      ]
+    }
+  }
+});
 
 
 /***/ })
