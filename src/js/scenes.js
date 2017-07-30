@@ -59,7 +59,15 @@ function drawNavbar (pc) {
     Crafty('NavbarBattery Text').get(0)
       .text("Battery: " + pc.batteryLife + "%");
 
+    var color = null;
+    if (pc.batteryLife >= 50)
+      color = 'green';
+    else if (pc.batteryLife >= 25)
+      color = 'yellow';
+    else
+      color = 'red';
     Crafty('NavbarBattery Color').get(0)
+      .color(color)
       .attr({w: 0.85 * pc.batteryLife});    // TODO
   }
 }
@@ -120,8 +128,8 @@ Crafty.scene('main', function (settings = null) {
     Crafty.e("2D, Canvas, Collision, Enemy, Motion, e1_sprite")
       .attr(gConsts.spriteXY.apply(gConsts, elem.pos))
       .attr({
-        vx: elem.speed[0] * gConsts.e1Speed,
-        vy: elem.speed[1] * gConsts.e1Speed
+        vx: elem.speed[0] * gConsts.e1Speed * (elem.scale || 1.0),
+        vy: elem.speed[1] * gConsts.e1Speed * (elem.scale || 1.0)
       })
       .onHit('Solid', function () {
         var dirBlocked = stopMovement.bind(this, 'Solid')();
@@ -141,9 +149,10 @@ Crafty.scene('main', function (settings = null) {
     Crafty.e("2D, Canvas, Collision, Enemy, Motion, Delay, e2_sprite")
       .attr(gConsts.spriteXY.apply(gConsts, elem.pos))
       .attr({
-        vx: elem.speed[0] * gConsts.e1Speed,
-        vy: elem.speed[1] * gConsts.e1Speed
+        vx: elem.speed[0] * gConsts.e2Speed * (elem.scale || 1.0),
+        vy: elem.speed[1] * gConsts.e2Speed * (elem.scale || 1.0)
       })
+      .attr({bulletKind: (elem.bulletKind || null)})
       .onHit('Solid', function () {
         var dirBlocked = stopMovement.bind(this, 'Solid')();
 
@@ -157,8 +166,8 @@ Crafty.scene('main', function (settings = null) {
       })
       .delay(function () {
         var bulletKind = null;
-        if (elem.bulletKind != null)
-          bulletKind = elem.bulletKind
+        if (this.bulletKind != null)
+          bulletKind = this.bulletKind
         else
           bulletKind = Math.random() < 0.5 ? 'killing' : 'freezing'
 
@@ -176,12 +185,15 @@ Crafty.scene('main', function (settings = null) {
             this.destroy();
           })
           .color(bullet.color);
-      }, gConsts.bulletFreq, -1);
+      }, (elem.bulletFreq || gConsts.bulletFreq), -1);
   }
 
   // Draw PC
+  var pcStarting = levelSettings.pc;
+  if (pcStarting == null)
+    pcStarting = [0, 0]
   var pc = Crafty.e("2D, Canvas, Fourway, Collision, player_sprite")
-    .attr(gConsts.spriteXY(0, 0))
+    .attr(gConsts.spriteXY.apply(gConsts, pcStarting))
     .attr({
       batteryLife: 100,
       lives: settings.currentLives,
@@ -289,6 +301,13 @@ Crafty.scene('msg', function (settings) {
 });
 
 Crafty.scene('start', function () {
+  Crafty.e("2D, Canvas, Text, Persist, Mouse")
+    .attr({x: gConsts.canvasWidth() - 25, y: 0})
+    .text("Mute")
+    .bind('Click', function () {
+      Crafty.audio.toggleMute();
+    });
+
   Crafty.e("2D, Canvas, player_sprite")
     .attr({x: 0, y: gConsts.headerHeight, w: 320, h: 320});
 

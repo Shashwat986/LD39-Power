@@ -41,10 +41,11 @@ export default {
       enemy1: [
         {
           pos: [4, 4],
-          speed: [-1, 2]
+          speed: [-1, 2],
+          scale: 2
         },
         {
-          pos: [17, 0],
+          pos: [17, 2],
           speed: [0, 1]
         },
         {
@@ -54,6 +55,48 @@ export default {
       ]
     },
     3: {
+      portal: [19, 9],
+      charger: [
+        [3, 6],
+        [5, 9],
+        [6, 2],
+        [11, 8],
+        [14, 4],
+        [14, 0],
+        [16, 8]
+      ],
+      enemy1: [
+        {
+          pos: [3, 9],
+          speed: [-1, -2]
+        },
+        {
+          pos: [3, 9],
+          speed: [1, -2]
+        },
+        {
+          pos: [7, 0],
+          speed: [-1, 2]
+        },
+        {
+          pos: [11, 9],
+          speed: [1, -2]
+        },
+        {
+          pos: [14, 0],
+          speed: [-1, 2]
+        },
+        {
+          pos: [16, 9],
+          speed: [1, -2]
+        },
+        {
+          pos: [19, 0],
+          speed: [-1, 2]
+        }
+      ]
+    },
+    4: {
       portal: [19, 9],
       charger: [
         [6, 6],
@@ -79,6 +122,189 @@ export default {
           speed: [0, 1]
         }
       ]
-    }
+    },
+    5: {
+      portal: [19, 9],
+      oneTimeCharger: [
+        [10, 3],
+        [8, 4],
+        [4, 8]
+      ],
+      charger: [
+        [18, 4],
+        [12, 9]
+      ],
+      enemy2: [
+        {
+          pos: [8, 0],
+          speed: [0, 1],
+          bulletKind: 'freezing'
+        },
+        {
+          pos: [7, 9],
+          speed: [0, -1],
+          bulletKind: 'freezing'
+        },
+        {
+          pos: [14, 0],
+          speed: [0, 1],
+          bulletKind: 'freezing'
+        },
+        {
+          pos: [15, 9],
+          speed: [0, -1],
+          bulletKind: 'freezing'
+        }
+      ]
+    },
+    6: {
+      pc: [0, 5],
+      portal: [19, 5],
+      charger: [
+        [9, 2],
+        [9, 9]
+      ],
+      oneTimeCharger: [
+        [14, 5]
+      ],
+      enemy1: [
+        {
+          pos: [0, 2],
+          speed: [1, 0]
+        },
+        {
+          pos: [0, 9],
+          speed: [1, 0]
+        },
+        {
+          pos: [10, 4],
+          speed: [0, 0]
+        },
+        {
+          pos: [10, 5],
+          speed: [0, 0]
+        },
+        {
+          pos: [10, 6],
+          speed: [0, 0]
+        },
+        {
+          pos: [10, 7],
+          speed: [0, 0]
+        }
+      ],
+      enemy2: [
+        {
+          pos: [17, 5],
+          speed: [0, 0],
+          bulletKind: 'killing',
+          bulletFreq: 300
+        }
+      ]
+    },
+    7: {
+      portal: [19, 9],
+      oneTimeCharger: [
+        [13, 0],
+        [9, 5],
+        [5, 9],
+        [18, 9]
+      ]
+    },
+    8: {
+      portal: [19, 9],
+      charger: [
+        [5, 3],
+        [5, 7],
+        [10, 5],
+        [15, 3],
+        [15, 7]
+      ],
+      enemy1: [
+        {
+          pos: [10, 0],
+          speed: [-1, 0]
+        },
+        {
+          pos: [10, 0],
+          speed: [-1, 3],
+          scale: 3
+        },
+        {
+          pos: [10, 0],
+          speed: [1, 3],
+          scale: 3
+        },
+        {
+          pos: [10, 9],
+          speed: [-1, 2],
+          scale: 4
+        },
+        {
+          pos: [10, 9],
+          speed: [1, 2],
+          scale: 4
+        },
+        {
+          pos: [10, 0],
+          speed: [-1, 2],
+          scale: 4
+        },
+        {
+          pos: [10, 0],
+          speed: [1, 2],
+          scale: 4
+        },
+        {
+          pos: [10, 0],
+          speed: [-1, 1],
+          scale: 4
+        },
+        {
+          pos: [10, 0],
+          speed: [1, 1],
+          scale: 4
+        }
+      ]
+    },
+    9: {
+      portal: [19, 9],
+      charger: [
+        [10, 0],
+        [10, 9],
+        [5, 3],
+        [3, 5],
+        [15, 4],
+        [15, 6],
+        [15, 9]
+      ],
+      enemy2: [
+        {
+          pos: [17, 7],
+          speed: [0, 0],
+          bulletKind: 'killing'
+        },
+        {
+          pos: [19, 7],
+          speed: [0, 0],
+          bulletKind: 'killing'
+        },
+        {
+          pos: [15, 7],
+          speed: [0, 0],
+          bulletKind: 'killing'
+        },
+        {
+          pos: [10, 0],
+          speed: [0, 1],
+          bulletKind: 'freezing'
+        },
+        {
+          pos: [10, 9],
+          speed: [0, -1],
+          bulletKind: 'freezing'
+        }
+      ]
+    },
   }
 }
