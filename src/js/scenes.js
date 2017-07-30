@@ -16,7 +16,8 @@ function loseLife (msg) {
   } else {
     Crafty.scene('msg', {
       text: "Game Over",
-      info: msg,
+      info: msg + "<p/>You reached Level " + this.level +
+        " which is quite cool! Let's try to reach higher?",
       next: "start"
     });
   }
