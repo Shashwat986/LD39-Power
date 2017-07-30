@@ -22,7 +22,9 @@ export default {
       charger: [
         [6, 6],
         [9, 0],
-        [5, 8],
+        [5, 8]
+      ],
+      oneTimeCharger: [
         [14, 5],
         [16, 0],
         [10, 9]
@@ -56,7 +58,9 @@ export default {
       charger: [
         [6, 6],
         [9, 0],
-        [5, 8],
+        [5, 8]
+      ],
+      oneTimeCharger: [
         [14, 5]
       ],
       enemy1: [

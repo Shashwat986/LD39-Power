@@ -1,8 +1,8 @@
 export default {
-  gameWidth: 650,
   headerHeight: 42,
   headerPadding: 5,
-  gameHeight: 330,
+  gameWidth: 32 * 20 + 10,
+  gameHeight: 32 * 10 + 10,
   tileWidth: 32,
   tileHeight: 32,
   edgeThickness: 5,
@@ -13,8 +13,8 @@ export default {
 
   e1Speed: 50,
   e2Speed: 50,
-  bulletSpeed: 150,
-  bulletFreq: 800,
+  bulletSpeed: 300,
+  bulletFreq: 500,
   bulletFreezeTime: 500,
 
   canvas: function () {

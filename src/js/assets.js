@@ -3,6 +3,15 @@ export default {
     bg: ['sound.wav', 'sound.mp3', 'sound.ogg']
   },
   sprites: {
+    'bg.png': {
+      tile: 128,
+      tileh: 128,
+      map: {
+        bg1: [0, 0],
+        bg2: [0, 1],
+        bg3: [1, 0]
+      }
+    },
     'player.png': {
       tile: 320,
       tileh: 320,
@@ -15,6 +24,13 @@ export default {
       tileh: 320,
       map: {
         dead_sprite: [0, 0]
+      }
+    },
+    'one_time_charger.png': {
+      tile: 257,
+      tileh: 257,
+      map: {
+        one_time_charger_sprite: [0, 0]
       }
     },
     'charger.png': {

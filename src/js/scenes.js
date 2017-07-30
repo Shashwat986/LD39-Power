@@ -70,7 +70,17 @@ Crafty.scene('main', function (settings = null) {
   if (settings.currentLives == null)
     settings.currentLives = gConsts.maxLives;
   if (settings.currentLevel == null)
-    settings.currentLevel = 1;
+    settings.currentLevel = 1; //FIXME
+
+  // Draw Background
+  var bg = "bg" + (parseInt(Math.random() * 3) + 1);
+  Crafty.e("2D, Canvas, " + bg)
+    .attr({
+      x: gConsts.edgeThickness,
+      y: gConsts.headerHeight + gConsts.edgeThickness,
+      w: gConsts.canvasWidth(),
+      h: gConsts.canvasHeight()
+    });
 
   drawBorder();
 
@@ -89,7 +99,16 @@ Crafty.scene('main', function (settings = null) {
   for (var i = 0; levelSettings.charger != null && i < levelSettings.charger.length; i++) {
     var elem = levelSettings.charger[i];
 
-    Crafty.e("2D, Canvas, Collision, charger_sprite")
+    Crafty.e("2D, Canvas, Collision, Charger, charger_sprite")
+      .attr(gConsts.spriteXY.apply(gConsts, elem));
+  }
+
+  // Draw one-time charging points
+  for (var i = 0; levelSettings.oneTimeCharger != null && i < levelSettings.oneTimeCharger.length; i++) {
+    var elem = levelSettings.oneTimeCharger[i];
+
+    Crafty.e("2D, Canvas, Collision, Charger, one_time_charger_sprite")
+      .attr({kind: "onetime"})
       .attr(gConsts.spriteXY.apply(gConsts, elem));
   }
 
@@ -119,17 +138,16 @@ Crafty.scene('main', function (settings = null) {
     var elem = levelSettings.enemy2[i];
     elem.speed = normalize(elem.speed);
 
-    Crafty.e("2D, Canvas, Collision, Enemy, Motion, e2_sprite")
+    Crafty.e("2D, Canvas, Collision, Enemy, Motion, Delay, e2_sprite")
       .attr(gConsts.spriteXY.apply(gConsts, elem.pos))
       .attr({
         vx: elem.speed[0] * gConsts.e1Speed,
         vy: elem.speed[1] * gConsts.e1Speed
       })
-      .attr({ timeSinceBullet: 0.0 })
       .onHit('Solid', function () {
         var dirBlocked = stopMovement.bind(this, 'Solid')();
 
-        // TODO
+        // TODO?
         // var newDir = randomDirection(gConsts.e1Speed);
 
         if (dirBlocked === 'X' || dirBlocked === 'XY')
@@ -137,24 +155,28 @@ Crafty.scene('main', function (settings = null) {
         if (dirBlocked === 'Y' || dirBlocked === 'XY')
           this.vy = -this.vy;
       })
-      .bind('EnterFrame', function (e) {
-        this.timeSinceBullet += e.dt;
-        if (this.timeSinceBullet > gConsts.bulletFreq) {
-          this.timeSinceBullet = 0;
+      .delay(function () {
+        var bulletKind = null;
+        if (elem.bulletKind != null)
+          bulletKind = elem.bulletKind
+        else
+          bulletKind = Math.random() < 0.5 ? 'killing' : 'freezing'
 
-          var bullet = gameInfo.bullet(Math.random() < 0.5 ? 'killing' : 'freezing');
+        var bullet = gameInfo.bullet(bulletKind);
 
-          Crafty.e("2D, Canvas, Collision, Bullet, Motion, Color")
-            .attr({x: this.x, y: this.y, h: 5, w: 5})
-            .attr({kind: bullet.kind})
-            .attr(randomDirection(gConsts.bulletSpeed))
-            .onHit('Solid', function () {
-              this.destroy();
-            })
-            .color(bullet.color);
-        }
-      });
-      // TODO: Make E2 fire bullets
+        Crafty.e("2D, Canvas, Collision, Bullet, Motion, Color")
+          .attr({
+            x: this.x + (gConsts.tileWidth / 2),
+            y: this.y + (gConsts.tileHeight / 2),
+            h: 5, w: 5
+          })
+          .attr({kind: bullet.kind})
+          .attr(randomDirection(gConsts.bulletSpeed))
+          .onHit('Solid', function () {
+            this.destroy();
+          })
+          .color(bullet.color);
+      }, gConsts.bulletFreq, -1);
   }
 
   // Draw PC
@@ -210,8 +232,11 @@ Crafty.scene('main', function (settings = null) {
         default:
       }
     })
-    .onHit('charger_sprite', function () {
+    .onHit('Charger', function (e) {
       this.batteryLife = 100;
+
+      if (e[0].obj.kind === 'onetime')
+        e[0].obj.destroy();
     })
     .onHit('portal_sprite', function () {
       Crafty.scene('msg', {
