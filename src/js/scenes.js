@@ -76,6 +76,11 @@ Crafty.scene('main', function (settings = null) {
 
   var levelSettings = gameInfo.level[settings.currentLevel];
 
+  if (levelSettings == null) {
+    Crafty.scene('start');
+    return;
+  }
+
   // Draw Portal
   Crafty.e("2D, Canvas, Collision, portal_sprite")
     .attr(gConsts.spriteXY.apply(gConsts, levelSettings.portal));
