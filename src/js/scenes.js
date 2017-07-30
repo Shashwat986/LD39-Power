@@ -254,10 +254,15 @@ Crafty.scene('main', function (settings = null) {
 });
 
 Crafty.scene('msg', function (settings) {
-  Crafty.e("2D, Canvas, Text, Mouse")
-    .attr({x: 30, y: gConsts.headerHeight})
-    .text(settings.text)
+  Crafty.e("2D, DOM, Text, Mouse")
+    .attr({
+      x: 30,
+      y: gConsts.headerHeight,
+      w: (gConsts.canvasWidth() - 2 * gConsts.edgeThickness) - 30
+    })
+    .textAlign('center')
     .textFont('size', '36px')
+    .text(settings.text)
     .bind('Click', function () {
       Crafty.scene(settings.next, settings.attr);
     });
@@ -326,27 +331,59 @@ Crafty.scene('start', function () {
 });
 
 Crafty.scene('start2', function () {
+  var colWidth = (gConsts.canvasWidth() - 2 * gConsts.edgeThickness) / 3;
+
   Crafty.e("2D, Canvas, portal_sprite")
-    .attr({x: 0, y: gConsts.headerHeight + 50, w: 200, h: 200});
+    .attr({
+      x: gConsts.edgeThickness,
+      y: gConsts.headerHeight + 50,
+      w: colWidth,
+      h: colWidth
+    });
 
   Crafty.e("2D, DOM, Text")
-    .attr({x: 0, y: gConsts.headerHeight, w: 200})
+    .attr({
+      x: gConsts.edgeThickness,
+      y: gConsts.headerHeight,
+      w: colWidth
+    })
+    .textAlign("center")
     .text("This is the portal.")
     .textFont('size', '20px');
 
   Crafty.e("2D, Canvas, charger_sprite")
-    .attr({x: 210, y: gConsts.headerHeight + 50, w: 200, h: 200});
+    .attr({
+      x: gConsts.edgeThickness + colWidth,
+      y: gConsts.headerHeight + 50,
+      w: colWidth,
+      h: colWidth
+    });
 
   Crafty.e("2D, DOM, Text")
-    .attr({x: 210, y: gConsts.headerHeight, w: 200})
+    .attr({
+      x: gConsts.edgeThickness + colWidth,
+      y: gConsts.headerHeight,
+      w: colWidth
+    })
+    .textAlign("center")
     .text("This is a charging station")
     .textFont('size', '20px');
 
   Crafty.e("2D, Canvas, e1_sprite")
-    .attr({x: 420, y: gConsts.headerHeight + 50, w: 200, h: 200});
+    .attr({
+      x: gConsts.edgeThickness + 2 * colWidth,
+      y: gConsts.headerHeight + 50,
+      w: colWidth,
+      h: colWidth
+    });
 
   Crafty.e("2D, DOM, Text")
-    .attr({x: 420, y: gConsts.headerHeight, w: 200})
+    .attr({
+      x: gConsts.edgeThickness + 2 * colWidth,
+      y: gConsts.headerHeight,
+      w: colWidth
+    })
+    .textAlign("center")
     .text("This is a Jovian. BEWARE!")
     .textFont('size', '20px');
 
