@@ -1,4 +1,7 @@
 export default {
+  audio: {
+    bg: ['sound.wav', 'sound.mp3', 'sound.ogg']
+  },
   sprites: {
     'player.png': {
       tile: 320,
