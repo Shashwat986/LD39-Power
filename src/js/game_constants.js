@@ -1,8 +1,8 @@
 export default {
   headerHeight: 42,
   headerPadding: 5,
-  gameWidth: 32 * 20 + 10,
-  gameHeight: 32 * 10 + 10,
+  numTilesX: 20,
+  numTilesY: 10,
   tileWidth: 32,
   tileHeight: 32,
   edgeThickness: 5,
@@ -17,29 +17,36 @@ export default {
   bulletFreq: 500,
   bulletFreezeTime: 500,
 
+  gameWidth: function () {
+    return this.tileWidth * this.numTilesX + 2 * this.edgeThickness;
+  },
+  gameHeight: function () {
+    return this.tileHeight * this.numTilesY + 2 * this.edgeThickness;
+  },
+
   canvas: function () {
     return {
       topLeft: [0, this.headerHeight],
-      topRight: [this.gameWidth, this.headerHeight],
-      bottomLeft: [0, this.headerHeight + this.gameHeight],
-      bottomRight: [this.gameWidth, this.headerHeight + this.gameHeight]
+      topRight: [this.gameWidth(), this.headerHeight],
+      bottomLeft: [0, this.headerHeight + this.gameHeight()],
+      bottomRight: [this.gameWidth(), this.headerHeight + this.gameHeight()]
     };
   },
 
   canvasHeight: function () {
-    return this.headerHeight + this.gameHeight;
+    return this.headerHeight + this.gameHeight();
   },
 
   canvasWidth: function () {
-    return this.gameWidth;
+    return this.gameWidth();
   },
 
   numX: function () {
-    return parseInt((this.gameWidth - 2 * this.edgeThickness) / this.tileWidth) - 1;
+    return this.numTilesX - 1;
   },
 
   numY: function () {
-    return parseInt((this.gameHeight - 2 * this.edgeThickness) / this.tileHeight) - 1;
+    return this.numTilesY - 1;
   },
 
   spriteXY: function (x, y) {

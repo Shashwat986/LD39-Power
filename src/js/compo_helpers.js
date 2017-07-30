@@ -5,7 +5,7 @@ export function drawBorder () {
     .attr({
       x: gConsts.canvas().topLeft[0],
       y: gConsts.canvas().topLeft[1],
-      w: gConsts.gameWidth,
+      w: gConsts.gameWidth(),
       h: gConsts.edgeThickness
     })
     .color('red');
@@ -15,7 +15,7 @@ export function drawBorder () {
       x: gConsts.canvas().topLeft[0],
       y: gConsts.canvas().topLeft[1],
       w: gConsts.edgeThickness,
-      h: gConsts.gameHeight
+      h: gConsts.gameHeight()
     })
     .color('red');
 
@@ -24,7 +24,7 @@ export function drawBorder () {
       x: gConsts.canvas().topRight[0] - gConsts.edgeThickness,
       y: gConsts.canvas().topRight[1],
       w: gConsts.edgeThickness,
-      h: gConsts.gameHeight
+      h: gConsts.gameHeight()
     })
     .color('red');
 
@@ -32,7 +32,7 @@ export function drawBorder () {
     .attr({
       x: gConsts.canvas().bottomLeft[0],
       y: gConsts.canvas().bottomLeft[1] - gConsts.edgeThickness,
-      w: gConsts.gameWidth,
+      w: gConsts.gameWidth(),
       h: gConsts.edgeThickness
     })
     .color('red');
