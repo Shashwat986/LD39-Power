@@ -1,4 +1,4 @@
-export default {
+var gameData = {
   headerHeight: 42,
   headerPadding: 5,
   numTilesX: 20,
@@ -75,3 +75,14 @@ export default {
     }
   }
 };
+
+var scaleFeatures = [
+  'tileWidth', 'tileHeight',
+  'playerSpeed', 'e1Speed', 'e2Speed', 'bulletSpeed'
+];
+
+for (var i = 0; i < scaleFeatures.length ; i++) {
+  gameData[scaleFeatures[i]] *= 1.5;
+}
+
+export default gameData;
