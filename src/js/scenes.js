@@ -219,6 +219,7 @@ Crafty.scene('msg', function (settings) {
     .css({
       "border": "1px solid",
       "border-radius": "4px",
+      "cursor": "pointer",
       "padding": "5px"
     })
     .bind('Click', function () {
@@ -260,7 +261,8 @@ Crafty.scene('start', function () {
     .css({
       "border": "1px solid",
       "border-radius": "4px",
-      "padding": "5px"
+      "padding": "5px",
+      "cursor": "pointer"
     })
     .bind('Click', function () {
       Crafty.scene('start2');
@@ -305,6 +307,7 @@ Crafty.scene('start2', function () {
     .css({
       "border": "1px solid",
       "border-radius": "4px",
+      "cursor": "pointer",
       "padding": "5px"
     })
     .bind('Click', function () {
