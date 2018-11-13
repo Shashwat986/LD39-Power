@@ -14,8 +14,6 @@ require('./scenes');
 
 import assetsObject from './assets';
 Crafty.load(assetsObject, function () {
-  Crafty.audio.play('bg', -1);
-
   window.mb = Crafty.e("2D, DOM, Text, Persist, Mouse")
     .attr({x: gConsts.canvasWidth() - 25, y: 0, w: 25, h: 20})
     .attr({paused: false})

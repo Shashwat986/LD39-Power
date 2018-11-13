@@ -182,8 +182,6 @@ __webpack_require__(2);
 
 
 Crafty.load(__WEBPACK_IMPORTED_MODULE_1__assets__["a" /* default */], function () {
-  Crafty.audio.play('bg', -1);
-
   window.mb = Crafty.e("2D, DOM, Text, Persist, Mouse")
     .attr({x: __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].canvasWidth() - 25, y: 0, w: 25, h: 20})
     .attr({paused: false})
@@ -590,6 +588,7 @@ Crafty.scene('start', function () {
       "cursor": "pointer"
     })
     .bind('Click', function () {
+      Crafty.audio.play('bg', -1);
       Crafty.scene('start2');
     });
 });
