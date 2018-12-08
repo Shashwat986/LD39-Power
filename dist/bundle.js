@@ -428,7 +428,7 @@ Crafty.scene('main', function (settings = null) {
       frozen: false
     })
     .fourway(__WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].playerSpeed)
-    .bind('Moved', function (e) {
+    .bind('Move', function (e) {
       if (this.frozen) {
         this[e.axis] = e.oldValue;
         return;   //TODO
@@ -436,7 +436,7 @@ Crafty.scene('main', function (settings = null) {
 
       this.batteryLife -= __WEBPACK_IMPORTED_MODULE_0__game_constants__["a" /* default */].batteryDrain;
     })
-    .bind('EnterFrame', function () {
+    .bind('UpdateFrame', function () {
       if (this.batteryLife <= 0) {
         loseLife.bind(this, Object(__WEBPACK_IMPORTED_MODULE_2__compo_helpers__["b" /* getMessage */])('battery'))();
         return;

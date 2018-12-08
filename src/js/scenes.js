@@ -210,7 +210,7 @@ Crafty.scene('main', function (settings = null) {
       frozen: false
     })
     .fourway(gConsts.playerSpeed)
-    .bind('Moved', function (e) {
+    .bind('Move', function (e) {
       if (this.frozen) {
         this[e.axis] = e.oldValue;
         return;   //TODO
@@ -218,7 +218,7 @@ Crafty.scene('main', function (settings = null) {
 
       this.batteryLife -= gConsts.batteryDrain;
     })
-    .bind('EnterFrame', function () {
+    .bind('UpdateFrame', function () {
       if (this.batteryLife <= 0) {
         loseLife.bind(this, getMessage('battery'))();
         return;
