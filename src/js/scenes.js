@@ -17,8 +17,13 @@ function loseLife (msg) {
     Crafty.scene('msg', {
       text: "Game Over",
       info: msg + "<p/>You reached Level " + this.level +
-        " which is quite cool! Let's try to reach higher?",
-      next: "start"
+        " which is quite cool! But, since it's cutie's birthday, " +
+        "let's give her a few more lives?",
+      next: "main",
+      attr: {
+        currentLevel: this.level,
+        currentLives: gConsts.maxLives
+      }
     });
   }
 }
