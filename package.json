@@ -5,7 +5,8 @@
   "author": "",
   "main": "src/js/main.js",
   "scripts": {
-    "test": "python -m http.server 4041"
+    "test": "python -m http.server 4041",
+    "dev": "webpack --progress --watch"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,6 @@
   },
   "homepage": "https://github.com/Shashwat986/LD39-Power",
   "dependencies": {
-    "webpack": "^3.4.1"
+    "webpack": "^3.12.0"
   }
 }

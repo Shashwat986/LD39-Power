@@ -370,6 +370,7 @@ Crafty.scene('start', function () {
       "cursor": "pointer"
     })
     .bind('Click', function () {
+      Crafty.audio.play('bg', -1);
       Crafty.scene('start2');
     });
 });
