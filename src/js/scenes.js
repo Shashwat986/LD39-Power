@@ -23,6 +23,31 @@ function loseLife (msg) {
   }
 }
 
+function updateHint(hint = null) {
+  if (Crafty('Hint').length === 0) {
+    Crafty.e("2D, Canvas, HintFlash, Color")
+      .attr(gConsts.navbarX(8))
+      .attr({w: gConsts.tileWidth * 9, h: 36});
+
+    Crafty.e("2D, DOM, Hint, Text")
+      .attr(gConsts.navbarX(8))
+      .attr({w: gConsts.tileWidth * 9})
+      .textFont('size', '16px');
+  }
+  Crafty("Hint Text").get(0)
+    .text(hint ? "<b>Hint:</b> " + hint : "");
+
+  if (hint) {
+    Crafty('HintFlash').get(0)
+      .color('yellow');
+
+    window.setTimeout(function () {
+      Crafty('HintFlash').get(0)
+        .color('#cba053');
+    }, 200);
+  }
+}
+
 function drawNavbar (pc, hint = null) {
   Crafty.e("2D, Canvas, Text")
     .attr(gConsts.navbarX(17))
@@ -37,48 +62,66 @@ function drawNavbar (pc, hint = null) {
       .attr(gConsts.navbarX(i));
   }
 
-  if (hint) {
-    Crafty.e("2D, DOM, Text")
-      .attr(gConsts.navbarX(8))
-      .attr({w: gConsts.tileWidth * 7})
-      .textFont('size', '16px')
-      .text("<b>Hint:</b> " + hint);
-  }
+  updateHint(hint);
 }
 
 function updateBattery(pc) {
-  if (Crafty('NavbarBattery').length === 0) {
-    var loc = gConsts.navbarX(4)
+  var navWidth = gConsts.tileWidth * 2;
+  var navHeight = gConsts.tileHeight / 2 - 4;
 
+  if (Crafty('NavbarBattery').length === 0) {
+
+    var loc = gConsts.navbarX(3);
     Crafty.e("2D, Canvas, NavbarBattery, Text")
-      .attr({x: loc.x, y: loc.y + 16})
+      .attr({x: loc.x, y: loc.y + navHeight})
       .textFont('size', '14px');
 
     Crafty.e("2D, Canvas, NavbarBatteryContainer, Color")
-      .attr(loc)
-      .attr({h: 14, w: 87})   // TODO: Move to constants file
+      .attr({x: loc.x, y: loc.y})
+      .attr({h: navHeight - 2, w: navWidth})   // TODO: Move to constants file
       .color('black');
 
     Crafty.e("2D, Canvas, NavbarBattery, Color")
       .attr({x: loc.x + 1, y: loc.y + 1})
-      .attr({h: 12})          // TODO
+      .attr({h: navHeight - 4})          // TODO
       .color('green');
-  } else {
-    // Update Battery indicator
-    Crafty('NavbarBattery Text').get(0)
-      .text("Battery: " + pc.batteryLife + "%");
 
-    var color = null;
-    if (pc.batteryLife >= 50)
-      color = 'green';
-    else if (pc.batteryLife >= 25)
-      color = 'yellow';
-    else
-      color = 'red';
-    Crafty('NavbarBattery Color').get(0)
-      .color(color)
-      .attr({w: 0.85 * pc.batteryLife});    // TODO
+    loc = gConsts.navbarX(5.5)
+    Crafty.e("2D, Canvas, NavbarHeartsContainer, Color")
+      .attr({x: loc.x, y: loc.y})
+      .attr({h: navHeight - 2, w: navWidth})
+      .color('black');
+
+    Crafty.e("2D, Canvas, NavbarHeartsContainer2, Color")
+      .attr({x: loc.x + 1, y: loc.y + 1})
+      .attr({h: navHeight - 4, w: navWidth - 2})
+      .color('pink');
+
+    Crafty.e("2D, Canvas, NavbarHearts, Color")
+      .attr({x: loc.x + 1, y: loc.y + 1})
+      .attr({h: navHeight - 4})
+      .color('red');
+
+    Crafty.e("2D, Canvas, NavbarHearts, Text")
+      .attr({x: loc.x, y: loc.y + navHeight})
+      .textFont('size', '14px');
+
   }
+
+  // Update Battery indicator
+  Crafty('NavbarBattery Text').get(0)
+    .text("TimeLeft:" + parseInt(pc.batteryLife) + "s");
+
+  var color = 'green';
+  Crafty('NavbarBattery Color').get(0)
+    .color(color)
+    .attr({w: (navWidth - 2) * pc.batteryLife / pc.maxBatteryLife});    // TODO
+
+  Crafty('NavbarHearts Text').get(0)
+    .text('Hearts:' + parseInt(pc.heartsCollected) + '/' + parseInt(pc.heartsTotal));
+
+  Crafty('NavbarHearts Color').get(0)
+    .attr({w: (navWidth - 2) * pc.heartsCollected / pc.heartsTotal});
 }
 
 Crafty.scene('main', function (settings = null) {
@@ -116,15 +159,8 @@ Crafty.scene('main', function (settings = null) {
   for (var i = 0; levelSettings.charger != null && i < levelSettings.charger.length; i++) {
     var elem = levelSettings.charger[i];
 
-    Crafty.e("2D, Canvas, Collision, Charger, charger_sprite")
-      .attr(gConsts.spriteXY.apply(gConsts, elem));
-  }
-
-  // Draw one-time charging points
-  for (var i = 0; levelSettings.oneTimeCharger != null && i < levelSettings.oneTimeCharger.length; i++) {
-    var elem = levelSettings.oneTimeCharger[i];
-
-    Crafty.e("2D, Canvas, Collision, Charger, one_time_charger_sprite")
+    var sprite = 'heart' + (parseInt(Math.random() * 3) + 1);
+    Crafty.e("2D, Canvas, Collision, Charger, " + sprite)
       .attr({kind: "onetime"})
       .attr(gConsts.spriteXY.apply(gConsts, elem));
   }
@@ -200,11 +236,23 @@ Crafty.scene('main', function (settings = null) {
   // Draw PC
   var pcStarting = levelSettings.pc;
   if (pcStarting == null)
-    pcStarting = [0, 0]
-  var pc = Crafty.e("2D, Canvas, Fourway, Collision, player_sprite")
+    pcStarting = [0, 0];
+
+  var time = levelSettings.time;
+  if (time == null)
+    time = 120;
+
+  var heartsTotal = 0;
+  if (levelSettings.charger != null)
+    heartsTotal = levelSettings.charger.length;
+
+  var pc = Crafty.e("2D, Canvas, Fourway, Draggable, Collision, player_sprite")
     .attr(gConsts.spriteXY.apply(gConsts, pcStarting))
     .attr({
-      batteryLife: 100,
+      batteryLife: time,
+      maxBatteryLife: time,
+      heartsCollected: 0,
+      heartsTotal: heartsTotal,
       lives: settings.currentLives,
       level: settings.currentLevel,
       frozen: false
@@ -215,10 +263,15 @@ Crafty.scene('main', function (settings = null) {
         this[e.axis] = e.oldValue;
         return;   //TODO
       }
-
-      this.batteryLife -= gConsts.batteryDrain;
     })
-    .bind('EnterFrame', function () {
+    .bind('Dragging', function (e) {
+      console.log(e);
+      if (this.frozen) {
+        this.stopDrag();
+      }
+    })
+    .bind('EnterFrame', function (dt) {
+      this.batteryLife -= dt.dt * 0.001;
       if (this.batteryLife <= 0) {
         loseLife.bind(this, getMessage('battery'))();
         return;
@@ -228,6 +281,7 @@ Crafty.scene('main', function (settings = null) {
     })
     .onHit('Solid', function () {
       stopMovement.bind(this, 'Solid')();
+      this.stopDrag();
     })
     .onHit('Enemy', function () {
       loseLife.bind(this, getMessage('enemy'))();
@@ -254,12 +308,16 @@ Crafty.scene('main', function (settings = null) {
       }
     })
     .onHit('Charger', function (e) {
-      this.batteryLife = 100;
+      this.heartsCollected += 1;
 
       if (e[0].obj.kind === 'onetime')
         e[0].obj.destroy();
     })
     .onHit('portal_sprite', function () {
+      if (this.heartsCollected != this.heartsTotal) {
+        updateHint("You need to collect all the hearts to finish the level!");
+        return;
+      }
       var info = "You have made it to the portal. " +
         "Let's take you to Level " + (this.level + 1);
       if (this.level === gameInfo.maxLevel) {
@@ -333,42 +391,44 @@ Crafty.scene('msg', function (settings) {
 });
 
 Crafty.scene('start', function () {
+  var w = gConsts.canvasWidth() / 3;
   Crafty.e("2D, Canvas, player_sprite")
-    .attr({x: 0, y: gConsts.headerHeight, w: 320, h: 320});
+    .attr({x: 0, y: gConsts.headerHeight, w: w, h: w});
 
   Crafty.e("2D, Canvas, Text")
-    .attr({x: 350, y: gConsts.headerHeight})
+    .attr({x: w + 30, y: gConsts.headerHeight})
     .text("Battery Pack")
     .textFont('size', '36px');
 
   Crafty.e("2D, DOM, Text") // Using DOM because that has word-wrap
-    .attr({x: 350, y: gConsts.headerHeight + 50, w: gConsts.canvasWidth() - 350 - 30})
+    .attr({x: w + 30, y: gConsts.headerHeight + 50, w: gConsts.canvasWidth() - w - 60})
     .text(
-      "Leon is stranded on the planet Jupiter! " +
-      "His battery has very limited power, and he can't travel without his jetpack." +
+      "Cutie is stranded on the planet Jupiter! " +
+      "Her battery has very limited power, and she can't travel to her birthday party without her jetpack." +
       "<p></p>" +
-      "Help him get to each level's transporter without running out of battery. " +
-      "There are lots of charging points that can be used to fill your battery, " +
-      "but beware the evil Jovians who will try to eat Leon!"
+      "Help her get to each level's transporter without running out of battery. " +
+      "She needs to collect all the hearts along the way, " +
+      "but beware the evil Jovians who will try to eat her!"
     )
     .textFont('size', '18px');
 
   Crafty.e("2D, DOM, Color, Text, Mouse")
     .attr({
-      x: gConsts.canvasWidth() - 70,
-      y: gConsts.canvasHeight() - 30,
-      w: 100,
-      h: 30
+      x: 2 * w - 70,
+      y: gConsts.canvasHeight() - 75,
+      w: 140,
+      h: 55
     })
     .color('green')
     .text('NEXT')
-    .textFont('size', '20px')
+    .textFont('size', '50px')
     .css({
       "border": "1px solid",
       "border-radius": "4px",
       "padding": "5px",
-      "cursor": "pointer"
+      "cursor": "pointer",
     })
+    .textAlign('center')
     .bind('Click', function () {
       Crafty.audio.play('bg', -1);
       Crafty.scene('start2');
@@ -396,7 +456,7 @@ Crafty.scene('start2', function () {
     .text("This is the portal.")
     .textFont('size', '20px');
 
-  Crafty.e("2D, Canvas, charger_sprite")
+  Crafty.e("2D, Canvas, player_sprite")
     .attr({
       x: gConsts.edgeThickness + colWidth,
       y: gConsts.headerHeight + 50,
@@ -411,7 +471,7 @@ Crafty.scene('start2', function () {
       w: colWidth
     })
     .textAlign("center")
-    .text("This is a charging station")
+    .text("This is a cutie")
     .textFont('size', '20px');
 
   Crafty.e("2D, Canvas, e1_sprite")
@@ -441,21 +501,20 @@ Crafty.scene('start2', function () {
     .textAlign("center")
     .text(
       "Use arrow keys to move up, down, left, and right. " + "<br/>" +
-      "Note that pressing two arrow keys to move diagonally will use the same " +
-      "amount of battery as moving first one way then the other"
+      "Or, you can touch cutie and drag her to where you want to go."
     )
     .textFont('size', '18px');
 
   Crafty.e("2D, DOM, Color, Text, Mouse")
     .attr({
-      x: gConsts.canvasWidth() - 85,
-      y: gConsts.canvasHeight() - 30,
-      w: 100,
-      h: 30
+      x: gConsts.canvasWidth() - 130,
+      y: gConsts.canvasHeight() - 45,
+      w: 130,
+      h: 40
     })
     .color('green')
     .text('START')
-    .textFont('size', '20px')
+    .textFont('size', '36px')
     .css({
       "border": "1px solid",
       "border-radius": "4px",

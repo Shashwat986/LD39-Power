@@ -26,18 +26,25 @@ export default {
         dead_sprite: [0, 0]
       }
     },
-    'one_time_charger.png': {
+    'heart1.png': {
       tile: 257,
       tileh: 257,
       map: {
-        one_time_charger_sprite: [0, 0]
+        heart1: [0, 0]
       }
     },
-    'charger.png': {
+    'heart2.png': {
       tile: 257,
       tileh: 257,
       map: {
-        charger_sprite: [0, 0]
+        heart2: [0, 0]
+      }
+    },
+    'heart3.png': {
+      tile: 257,
+      tileh: 257,
+      map: {
+        heart3: [0, 0]
       }
     },
     'portal.png': {

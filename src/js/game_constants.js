@@ -1,10 +1,18 @@
+var tileWidth = (window.innerWidth - 100) / 20
+var tileHeight = (window.innerHeight - 100) / 10
+
+var tileSize = (tileWidth > tileHeight) ? tileHeight : tileWidth;
+
+console.log(tileWidth, tileHeight, tileSize, window.innerWidth, window.innerHeight);
+
+
 var gameData = {
   headerHeight: 42,
   headerPadding: 5,
   numTilesX: 20,
   numTilesY: 10,
-  tileWidth: 32,
-  tileHeight: 32,
+  tileWidth: tileSize,
+  tileHeight: tileSize,
   edgeThickness: 5,
 
   maxLives: 3,
@@ -81,8 +89,12 @@ var scaleFeatures = [
   'playerSpeed', 'e1Speed', 'e2Speed', 'bulletSpeed'
 ];
 
+/*
 for (var i = 0; i < scaleFeatures.length ; i++) {
   gameData[scaleFeatures[i]] *= 1.5;
 }
+*/
+
+window.gd = gameData;
 
 export default gameData;

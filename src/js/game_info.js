@@ -19,20 +19,19 @@ export default {
   maxLevel: 10,
   level: {
     1: {
-      hint: "The purple charging stations can be used only once! Tread carefully",
+      hint: "You need to collect all the hearts, and then enter the portal before your battery runs out",
       portal: [19, 9],
       charger: [
         [6, 6],
         [9, 0],
-        [5, 8]
-      ],
-      oneTimeCharger: [
+        [5, 8],
         [14, 5],
         [16, 0],
         [10, 9]
       ]
     },
     2: {
+      hint: "Beware the Jovians! They will eat you if they get a chance",
       portal: [19, 9],
       charger: [
         [6, 6],
@@ -57,6 +56,7 @@ export default {
       ]
     },
     3: {
+      hint: "You're doing great! Keep it up, cutie!",
       portal: [19, 9],
       charger: [
         [3, 6],
@@ -99,14 +99,12 @@ export default {
       ]
     },
     4: {
-      hint: "Beware the Jovian bullets: the Blue bullets freeze the user, but the black ones KILL",
+      hint: "Beware the Jovian bullets: if you're hit, you'll be frozen for a little time.",
       portal: [19, 9],
       charger: [
         [6, 6],
         [9, 0],
-        [5, 8]
-      ],
-      oneTimeCharger: [
+        [5, 8],
         [14, 5]
       ],
       enemy1: [
@@ -122,18 +120,17 @@ export default {
       enemy2: [
         {
           pos: [14, 0],
-          speed: [0, 1]
+          speed: [0, 1],
+          bulletKind: 'freezing'
         }
       ]
     },
     5: {
       portal: [19, 9],
-      oneTimeCharger: [
+      charger: [
         [10, 3],
         [8, 4],
-        [4, 8]
-      ],
-      charger: [
+        [4, 8],
         [18, 4],
         [12, 9]
       ],
@@ -165,9 +162,7 @@ export default {
       portal: [19, 5],
       charger: [
         [9, 2],
-        [9, 9]
-      ],
-      oneTimeCharger: [
+        [9, 9],
         [14, 5]
       ],
       enemy1: [
@@ -200,15 +195,14 @@ export default {
         {
           pos: [17, 5],
           speed: [0, 0],
-          bulletKind: 'killing',
+          bulletKind: 'freezing',
           bulletFreq: 300
         }
       ]
     },
     7: {
-      hint: "Choose wisely! The first charger you go to may very well be your last!",
       portal: [19, 9],
-      oneTimeCharger: [
+      charger: [
         [13, 0],
         [9, 5],
         [5, 9],
@@ -287,17 +281,17 @@ export default {
         {
           pos: [17, 7],
           speed: [0, 0],
-          bulletKind: 'killing'
+          bulletKind: 'freezing'
         },
         {
           pos: [19, 7],
           speed: [0, 0],
-          bulletKind: 'killing'
+          bulletKind: 'freezing'
         },
         {
           pos: [15, 7],
           speed: [0, 0],
-          bulletKind: 'killing'
+          bulletKind: 'freezing'
         },
         {
           pos: [10, 0],
