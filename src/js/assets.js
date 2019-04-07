@@ -1,6 +1,7 @@
 export default {
   audio: {
-    bg: ['sound.wav', 'sound.mp3', 'sound.ogg']
+    bg: ['sound.wav', 'sound.mp3', 'sound.ogg'],
+    bday: ['bday.wav']
   },
   sprites: {
     'bg.png': {
@@ -66,6 +67,13 @@ export default {
       tileh: 416,
       map: {
         e2_sprite: [0, 0]
+      }
+    },
+    'cake.png': {
+      tile: 580,
+      tileh: 580,
+      map: {
+        cake_sprite: [0, 0]
       }
     }
   }

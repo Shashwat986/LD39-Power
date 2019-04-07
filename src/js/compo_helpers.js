@@ -54,6 +54,28 @@ export function stopMovement(componentString) {
   //this.resetMotion();
 }
 
+export function getBackInside() {
+  var moved = false;
+  if (this.x < gConsts.canvas().topLeft[0] + gConsts.edgeThickness) {
+    this.x = gConsts.canvas().topLeft[0] + gConsts.edgeThickness + 1;
+    moved = true;
+  }
+  if (this.y < gConsts.canvas().topLeft[1] + gConsts.edgeThickness) {
+    this.y = gConsts.canvas().topLeft[1] + gConsts.edgeThickness + 1;
+    moved = true;
+  }
+  if (this.x + this.w > gConsts.canvas().bottomRight[0] - gConsts.edgeThickness) {
+    this.x = gConsts.canvas().bottomRight[0] - gConsts.edgeThickness - 1 - this.w;
+    moved = true;
+  }
+  if (this.y + this.h > gConsts.canvas().bottomRight[1] - gConsts.edgeThickness) {
+    this.y = gConsts.canvas().bottomRight[1] - gConsts.edgeThickness - 1 - this.h;
+    moved = true;
+  }
+
+  return moved;
+}
+
 export function normalize (list) {
   var val = 0.0;
   for (var i = 0; i < list.length; i++) {

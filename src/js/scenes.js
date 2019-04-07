@@ -1,6 +1,6 @@
 import gConsts from './game_constants';
 import gameInfo from './game_info';
-import { drawBorder, stopMovement, normalize, randomDirection, getMessage } from './compo_helpers';
+import { drawBorder, stopMovement, getBackInside, normalize, randomDirection, getMessage } from './compo_helpers';
 
 function loseLife (msg) {
   if (this.lives > 0) {
@@ -49,10 +49,13 @@ function updateHint(hint = null) {
 }
 
 function drawNavbar (pc, hint = null) {
-  Crafty.e("2D, Canvas, Text")
+  Crafty.e("2D, Canvas, Text, Mouse")
     .attr(gConsts.navbarX(17))
     .textFont('size', '20px')
-    .text("Level: " + pc.level);
+    .text("Level: " + pc.level)
+    .bind('Click', function () {
+      Crafty.scene('bday');
+    });;
 
   for (var i = 0; i < gConsts.maxLives ; i++) {
     Crafty.e(
@@ -246,8 +249,29 @@ Crafty.scene('main', function (settings = null) {
   if (levelSettings.charger != null)
     heartsTotal = levelSettings.charger.length;
 
-  var pc = Crafty.e("2D, Canvas, Fourway, Draggable, Collision, player_sprite")
-    .attr(gConsts.spriteXY.apply(gConsts, pcStarting))
+  var pcPosition = gConsts.spriteXY.apply(gConsts, pcStarting);
+  var pc;
+  var draggable = Crafty.e("2D, DOM, Draggable, Collision")
+    .attr({
+      x: pcPosition.x - gConsts.tileWidth / 2,
+      y: pcPosition.y - gConsts.tileHeight / 2,
+      w: gConsts.tileWidth * 2,
+      h: gConsts.tileHeight * 2
+    })
+    .bind('Dragging', function (e) {
+      if (pc.frozen) {
+        this.stopDrag();
+      }
+
+      getBackInside.bind(this)();
+      pc.attr({
+        x: this.x + gConsts.tileWidth / 2,
+        y: this.y + gConsts.tileHeight / 2
+      });
+    });
+
+  pc = Crafty.e("2D, Canvas, Fourway, Collision, player_sprite")
+    .attr(pcPosition)
     .attr({
       batteryLife: time,
       maxBatteryLife: time,
@@ -261,14 +285,10 @@ Crafty.scene('main', function (settings = null) {
     .bind('Moved', function (e) {
       if (this.frozen) {
         this[e.axis] = e.oldValue;
-        return;   //TODO
       }
-    })
-    .bind('Dragging', function (e) {
-      console.log(e);
-      if (this.frozen) {
-        this.stopDrag();
-      }
+
+      draggable.x = this.x - gConsts.tileWidth / 2;
+      draggable.y = this.y - gConsts.tileHeight / 2;
     })
     .bind('EnterFrame', function (dt) {
       this.batteryLife -= dt.dt * 0.001;
@@ -280,8 +300,8 @@ Crafty.scene('main', function (settings = null) {
       updateBattery(this);
     })
     .onHit('Solid', function () {
+      getBackInside.bind(draggable)();
       stopMovement.bind(this, 'Solid')();
-      this.stopDrag();
     })
     .onHit('Enemy', function () {
       loseLife.bind(this, getMessage('enemy'))();
@@ -320,15 +340,18 @@ Crafty.scene('main', function (settings = null) {
       }
       var info = "You have made it to the portal. " +
         "Let's take you to Level " + (this.level + 1);
+      var next = "main";
       if (this.level === gameInfo.maxLevel) {
         info = "Congrats! You Won! " +
           "You had " + this.lives + " lives left! " +
           "Good Job!";
+
+        next = "bday";
       }
       Crafty.scene('msg', {
         text: "Level Cleared",
         info: info,
-        next: "main",
+        next: next,
         attr: {
           currentLevel: this.level + 1,
           currentLives: this.lives
@@ -388,6 +411,20 @@ Crafty.scene('msg', function (settings) {
     .bind('Click', function () {
       Crafty.scene(settings.next, settings.attr);
     });
+});
+
+Crafty.scene('bday', function () {
+  Crafty.audio.pause('bg');
+  Crafty.audio.play('bday', -1);
+
+  var w = gConsts.canvasWidth() / 3;
+  Crafty.e("2D, Canvas, cake_sprite")
+    .attr({x: 10, y: gConsts.headerHeight, w: w, h: w});
+  Crafty.e("2D, DOM, Text")
+    .attr({x: w + 20, y: gConsts.headerHeight, w: gConsts.canvasWidth() - w - 20})
+    .textAlign('center')
+    .textFont('size', '72px')
+    .text("Happy Birthday, Tinu!");
 });
 
 Crafty.scene('start', function () {

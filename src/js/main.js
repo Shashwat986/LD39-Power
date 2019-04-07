@@ -26,6 +26,7 @@ Crafty.load(assetsObject, function () {
         this.paused = false;
       } else {
         Crafty.audio.pause('bg');
+        Crafty.audio.pause('bday');
         this.css({'text-decoration': 'line-through'});
         this.paused = true;
       }
